@@ -1,0 +1,7 @@
+Today is a good day. The weather is excellent and everyone feels happy.
+However, the system had a bad error yesterday.
+The performance was poor and the results were terrible.
+Overall the project is great but some parts are bad.
+There was an error in the database connection.
+The user experience is good and the interface is excellent.
+Some employees are sad about the poor performance.
