@@ -1,5 +1,7 @@
 # PYTHON-PARALLEL-TEXT-HANDLING-PROCESSOR
-This project focuses on making a text handling processor that works at the same time, using Python's multi-tasking for breaking up text, a module for simple pattern finding, and a simple database for text storage. It has csv files for batch checks and email service for summaries. The system handles big text sets.
+This project processes large-scale customer review datasets using parallel processing,
+applies rule-based sentiment scoring, detects complaint patterns, and stores results
+in an indexed database for search and reporting.
 Completed:
         Python environment setup,
         SQLite database integration,
