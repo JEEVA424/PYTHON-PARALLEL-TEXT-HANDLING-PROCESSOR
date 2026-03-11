@@ -21,6 +21,22 @@ The main goals of this project are:
 
 This project simulates a basic text analytics pipeline without requiring heavy machine learning libraries.
 
+Text Domain: System Logs and Technical Messages
+
+This system processes system log messages and technical event reports.
+The goal is to detect important keywords such as errors, warnings,
+and failures in system-generated text.
+
+Examples of processed text include:
+
+- Server error logs
+- System warning messages
+- Application failure reports
+- Debug and event logs
+
+The processor identifies critical patterns and assigns a severity score
+to help detect important system issues.
+
 🧠 Core Concepts Implemented
 
 During development, the following technical concepts were explored:
@@ -213,5 +229,6 @@ Potential improvements include:
 
 Academic Project
 Python Parallel Text Handling Processor
+
 
 Developed as part of a learning exercise in parallel computing, text analytics, and Python backend development.
