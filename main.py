@@ -6,7 +6,7 @@ Pipeline:
 Load Text → Break into Chunks → Process in Parallel
 → Apply Rule Engine → Store Results → Display Summary
 """
-
+import time
 from concurrent.futures import ThreadPoolExecutor
 from text_loader import load_txt
 from rule_engine import sentiment_score, detect_pattern
@@ -55,7 +55,7 @@ def process_chunk(chunk):
 # --------------------------------------------------
 
 def main():
-
+    start_time = time.time()
     print("\n==============================")
     print(" PARALLEL TEXT PROCESSOR")
     print("==============================\n")
@@ -111,12 +111,15 @@ def main():
     print("Total Chunks Processed :", total_chunks)
     print("Total Sentiment Score  :", total_score)
     print("Patterns Detected      :", pattern_count)
-
+    end_time = time.time()
+    execution_time = end_time - start_time
+    print("\nExecution Time:", round(execution_time, 3), "seconds")
+    
     print("\nProcessing Complete.")
-
-
+    
 # --------------------------------------------------
 
 if __name__ == "__main__":
 
     main()
+
