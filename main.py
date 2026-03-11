@@ -10,8 +10,7 @@ Load Text → Break into Chunks → Process in Parallel
 from concurrent.futures import ThreadPoolExecutor
 from text_loader import load_txt
 from rule_engine import sentiment_score, detect_pattern
-from database import insert_data
-
+from database import insert_data, create_table
 
 # --------------------------------------------------
 # CHUNKING FUNCTION
@@ -60,7 +59,7 @@ def main():
     print("\n==============================")
     print(" PARALLEL TEXT PROCESSOR")
     print("==============================\n")
-
+    create_table()
     try:
         text = load_txt("sample_test.txt")
 
@@ -119,4 +118,5 @@ def main():
 # --------------------------------------------------
 
 if __name__ == "__main__":
+
     main()
