@@ -16,7 +16,7 @@ from database import insert_data, create_table
 # CHUNKING FUNCTION
 # --------------------------------------------------
 
-def chunk_text(text, chunk_size=200):
+def chunk_text(text, chunk_size=2500):
     """
     Break text into word-based chunks for scalable processing
     """
@@ -122,4 +122,5 @@ def main():
 if __name__ == "__main__":
 
     main()
+
 
