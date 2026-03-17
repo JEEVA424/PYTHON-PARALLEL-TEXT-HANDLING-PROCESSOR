@@ -1,19 +1,23 @@
 import streamlit as st
 import pandas as pd
 from processor import process_text
-from database import create_table, get_all_results
+from database import create_table, get_all_results, reset_database
 
+# create database table
 create_table()
 
+# page configuration
 st.set_page_config(page_title="Parallel Text Processor", layout="wide")
 
 st.title("Parallel Text Processing Dashboard")
 
+# file upload
 uploaded_file = st.file_uploader(
     "Upload Text File",
     type=["txt"]
 )
 
+# file preview
 if uploaded_file:
 
     text = uploaded_file.read().decode("utf-8")
@@ -22,22 +26,29 @@ if uploaded_file:
 
     st.write(text[:500])
 
+    # start processing button
     if st.button("Start Processing"):
+
+        # clear old data
+        reset_database()
 
         progress = st.progress(0)
 
         for i in range(100):
-            progress.progress(i+1)
+            progress.progress(i + 1)
 
-        results = process_text(text)
+        process_text(text)
 
         st.success("Processing Completed")
 
+
+# get stored results
 data = get_all_results()
 
+# show results dashboard
 if data:
 
-    df = pd.DataFrame(data, columns=["Text","Sentiment Score"])
+    df = pd.DataFrame(data, columns=["Text", "Sentiment Score"])
 
     st.subheader("Results Dashboard")
 
@@ -46,9 +57,10 @@ if data:
     col1, col2, col3 = st.columns(3)
 
     col1.metric("Total Text", len(df))
-    col2.metric("Positive",(df["Sentiment Score"]>0).sum())
-    col3.metric("Negative",(df["Sentiment Score"]<0).sum())
+    col2.metric("Positive", (df["Sentiment Score"] > 0).sum())
+    col3.metric("Negative", (df["Sentiment Score"] < 0).sum())
 
+    # search feature
     keyword = st.text_input("Search")
 
     if keyword:
@@ -57,6 +69,7 @@ if data:
 
         st.dataframe(filtered)
 
+    # csv export
     csv = df.to_csv(index=False)
 
     st.download_button(
