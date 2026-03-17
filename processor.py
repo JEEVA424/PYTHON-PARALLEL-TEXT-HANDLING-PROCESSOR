@@ -1,32 +1,50 @@
-import re
+import time
+from concurrent.futures import ProcessPoolExecutor
 from database import insert_result
+import re
 
-positive_words = ["good","excellent","happy","great","amazing"]
-negative_words = ["bad","terrible","sad","poor","worst"]
 
-def sentiment_score(text):
+positive_words = ["good", "great", "excellent", "amazing", "love", "happy"]
+negative_words = ["bad", "poor", "terrible", "hate", "sad"]
 
-    words = re.findall(r'\w+', text.lower())
 
-    pos = sum(1 for w in words if w in positive_words)
-    neg = sum(1 for w in words if w in negative_words)
+def analyze_sentiment(sentence):
 
-    return pos - neg
+    score = 0
+    words = sentence.lower().split()
+
+    for word in words:
+
+        if word in positive_words:
+            score += 1
+
+        if word in negative_words:
+            score -= 1
+
+    return score
+
+
+def process_sentence(sentence):
+
+    score = analyze_sentiment(sentence)
+
+    insert_result(sentence, score)
+
+    return sentence, score
 
 
 def process_text(text):
-    sentences = [s.strip() for s in text.split(".") if s.strip()]
-    results = []
 
-    for sentence in sentences:
+    start_time = time.time()
 
-        if sentence.strip() == "":
-            continue
+    sentences = [s.strip() for s in re.split(r'[.!?]', text) if s.strip()]
 
-        score = sentiment_score(sentence)
+    with ProcessPoolExecutor(max_workers=4) as executor:
 
-        insert_result(sentence.strip(), score)
+        results = list(executor.map(process_sentence, sentences))
 
-        results.append((sentence.strip(), score))
+    end_time = time.time()
 
-    return results
+    execution_time = end_time - start_time
+
+    return results, execution_time
