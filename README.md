@@ -58,19 +58,40 @@ The primary objectives of this project are:
 
 ## System Architecture
 
-Text File Upload
-↓
-Streamlit User Interface
-↓
-Sentence Splitting Module
-↓
-Parallel Processing Engine (ProcessPoolExecutor)
-↓
-Sentiment Analysis Engine
-↓
-SQLite Database Storage
-↓
-Results Visualization Dashboard
++----------------------+
+|   Text File Upload   |
++----------+-----------+
+           |
+           v
++------------------------------+
+|  Streamlit User Interface    |
++--------------+---------------+
+               |
+               v
++------------------------------+
+|     Sentence Splitting       |
++--------------+---------------+
+               |
+               v
++------------------------------+
+|  Parallel Processing Engine  |
+|   (ProcessPoolExecutor)      |
++--------------+---------------+
+               |
+               v
++------------------------------+
+|     Sentiment Analysis       |
++--------------+---------------+
+               |
+               v
++------------------------------+
+|      SQLite Database         |
++--------------+---------------+
+               |
+               v
++------------------------------+
+|   Results Dashboard & CSV    |
++------------------------------+
 
 ---
 
