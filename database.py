@@ -1,50 +1,63 @@
 import sqlite3
 
+
 def create_table():
-    conn = sqlite3.connect("text_results.db")
+
+    conn = sqlite3.connect("results.db")
+
     cursor = conn.cursor()
 
     cursor.execute("""
-    CREATE TABLE IF NOT EXISTS texts(
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        text_chunk TEXT,
-        sentiment_score INTEGER
-    )
+        CREATE TABLE IF NOT EXISTS results(
+            text TEXT,
+            score INTEGER
+        )
     """)
 
     conn.commit()
-    conn.close()
 
-def reset_database():
-    conn = sqlite3.connect("text_results.db")
-    cursor = conn.cursor()
-
-    cursor.execute("DELETE FROM texts")
-
-    conn.commit()
     conn.close()
 
 
 def insert_result(text, score):
-    conn = sqlite3.connect("text_results.db")
+
+    conn = sqlite3.connect("results.db")
+
     cursor = conn.cursor()
 
     cursor.execute(
-        "INSERT INTO texts(text_chunk, sentiment_score) VALUES (?,?)",
+        "INSERT INTO results VALUES (?, ?)",
         (text, score)
     )
 
     conn.commit()
+
     conn.close()
 
 
 def get_all_results():
-    conn = sqlite3.connect("text_results.db")
+
+    conn = sqlite3.connect("results.db")
+
     cursor = conn.cursor()
 
-    cursor.execute("SELECT text_chunk, sentiment_score FROM texts")
+    cursor.execute("SELECT * FROM results")
 
     data = cursor.fetchall()
 
     conn.close()
+
     return data
+
+
+def reset_database():
+
+    conn = sqlite3.connect("results.db")
+
+    cursor = conn.cursor()
+
+    cursor.execute("DELETE FROM results")
+
+    conn.commit()
+
+    conn.close()
