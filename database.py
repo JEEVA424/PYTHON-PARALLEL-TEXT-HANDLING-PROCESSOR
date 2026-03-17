@@ -15,6 +15,15 @@ def create_table():
     conn.commit()
     conn.close()
 
+def reset_database():
+    conn = sqlite3.connect("text_results.db")
+    cursor = conn.cursor()
+
+    cursor.execute("DELETE FROM texts")
+
+    conn.commit()
+    conn.close()
+
 
 def insert_result(text, score):
     conn = sqlite3.connect("text_results.db")
