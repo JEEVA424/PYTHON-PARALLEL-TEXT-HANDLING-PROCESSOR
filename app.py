@@ -3,49 +3,38 @@ import pandas as pd
 from processor import process_text
 from database import create_table, get_all_results, reset_database
 
-# create database table
 create_table()
 
-# page configuration
 st.set_page_config(page_title="Parallel Text Processor", layout="wide")
 
 st.title("Parallel Text Processing Dashboard")
 
-# file upload
-uploaded_file = st.file_uploader(
-    "Upload Text File",
-    type=["txt"]
-)
+uploaded_file = st.file_uploader("Upload Text File", type=["txt"])
 
-# file preview
 if uploaded_file:
+
+    reset_database()
 
     text = uploaded_file.read().decode("utf-8")
 
     st.subheader("File Preview")
-
     st.write(text[:500])
 
-    # start processing button
     if st.button("Start Processing"):
-
-        # clear old data
-        reset_database()
 
         progress = st.progress(0)
 
         for i in range(100):
             progress.progress(i + 1)
 
-        process_text(text)
+        results, execution_time = process_text(text)
 
         st.success("Processing Completed")
 
+        st.info(f"Processing Time: {execution_time:.2f} seconds")
 
-# get stored results
 data = get_all_results()
 
-# show results dashboard
 if data:
 
     df = pd.DataFrame(data, columns=["Text", "Sentiment Score"])
@@ -60,16 +49,12 @@ if data:
     col2.metric("Positive", (df["Sentiment Score"] > 0).sum())
     col3.metric("Negative", (df["Sentiment Score"] < 0).sum())
 
-    # search feature
     keyword = st.text_input("Search")
 
     if keyword:
-
         filtered = df[df["Text"].str.contains(keyword, case=False)]
-
         st.dataframe(filtered)
 
-    # csv export
     csv = df.to_csv(index=False)
 
     st.download_button(
@@ -78,3 +63,5 @@ if data:
         "results.csv",
         "text/csv"
     )
+
+st.caption("Processing powered by Python Parallel Computing using ProcessPoolExecutor")
