@@ -1,57 +1,53 @@
-# PYTHON PARALLEL TEXT HANDLING PROCESSOR
+PYTHON PARALLEL TEXT HANDLING PROCESSOR
 
-🚀 A Python-based system designed to **process large text files efficiently using parallel computing**.
+🚀 A high-performance Python system designed to process large text datasets efficiently using parallel computing.
 
-This project splits text data into smaller units and processes them simultaneously using multiple CPU cores to improve performance.
+This project enables users to upload large files (TXT, CSV, Excel), perform sentiment analysis, and visualize results through an interactive dashboard with parallel execution optimization.
 
-The system provides an **interactive interface to upload text files, process them, store results, and visualize outputs.**
+Project Objective
 
----
-
-# Project Objective
-
-Large text files require significant time when processed sequentially.
-This project demonstrates how **parallel processing in Python** improves performance by distributing tasks across multiple processors.
+Processing large text data sequentially is slow and inefficient.
+This project demonstrates how parallel processing using multiple CPU cores improves performance and scalability.
 
 The system:
 
-* Reads text files
-* Splits them into sentences
-* Processes sentences in **parallel**
-* Performs **sentiment analysis**
-* Stores results in **SQLite database**
-* Displays analysis in a **dashboard**
+Reads large datasets (50K+ records)
+Splits text into sentences
+Processes data using parallel execution
+Applies rule-based sentiment analysis
+Stores results in a SQLite database
+Displays analytics via a user-friendly dashboard
+Features
+Core Features
 
----
+✔ Upload files (TXT, CSV, Excel)
+✔ Parallel text processing using ProcessPoolExecutor
+✔ Sentiment classification (Positive / Negative / Neutral)
+✔ SQLite database storage
+✔ Interactive Streamlit dashboard
 
-# Features
+Advanced Features
 
-* Upload and process large text files
-* Automatic sentence splitting
-* Parallel text processing using **ProcessPoolExecutor**
-* Sentiment classification (Positive / Negative / Neutral)
-* Database storage using **SQLite**
-* Interactive dashboard using **Streamlit**
-* Export results to **CSV format**
+✔ Sequential vs Parallel execution comparison
+✔ Execution time measurement
+✔ CPU core selection (1–8 cores)
+✔ Repeated-word sentiment handling
+✔ Smart search (keyword + repeated word search)
+✔ Pie chart visualization
+✔ CSV export
+✔ Email report generation
+✔ Reset / clear data option
+✔ Edge-case validation
 
----
-
-# Technologies Used
-
-| Technology         | Purpose                   |
-| ------------------ | ------------------------- |
-| Python             | Core programming language |
-| Streamlit          | Web interface             |
-| SQLite             | Data storage              |
-| Pandas             | Data processing           |
-| TextBlob / NLTK    | Sentiment analysis        |
-| Concurrent Futures | Parallel processing       |
-
----
-
-# System Architecture
-
-```
+Technologies Used
+Technology	Purpose
+Python	Core programming language
+Streamlit	Interactive web interface
+SQLite	Data storage
+Pandas	Data processing & analysis
+Matplotlib	Visualization (charts)
+Concurrent Futures	Parallel processing engine
+System Architecture
                 +----------------------+
                 |   Text File Upload   |
                 +----------+-----------+
@@ -64,142 +60,150 @@ The system:
                            v
                 +----------------------+
                 | Sentence Splitting   |
-                |        Module        |
                 +----------+-----------+
                            |
                            v
                 +------------------------------+
                 | Parallel Processing Engine   |
-                |    (ProcessPoolExecutor)     |
+                |   (ProcessPoolExecutor)      |
                 +----------+-------------------+
                            |
                            v
                 +----------------------+
                 | Sentiment Analysis   |
-                |        Engine        |
                 +----------+-----------+
                            |
                            v
                 +----------------------+
                 | SQLite Database      |
-                |   Store Results      |
                 +----------+-----------+
                            |
                            v
                 +----------------------+
-                | Results Dashboard    |
-                | + CSV Export         |
+                | Dashboard & Reports  |
+                | (Charts, Search, CSV)|
                 +----------------------+
-```
-
----
-
-# Project Structure
-
-```
+Project Structure
 PYTHON-PARALLEL-TEXT-HANDLING-PROCESSOR
 │
 ├── app.py
 ├── processor.py
 ├── database.py
 ├── requirements.txt
-├── sentiment_results.db
-├── sample_text.txt
-└── README.md
-```
-
----
-
-# Installation
-
-### 1 Clone the Repository
-
-```
+├── results.db
+├── README.md
+│
+└── .streamlit
+     └── config.toml
+Installation
+1 Clone Repository
 git clone https://github.com/JEEVA424/PYTHON-PARALLEL-TEXT-HANDLING-PROCESSOR.git
-```
-
-### 2 Navigate to Project Folder
-
-```
+2 Navigate to Folder
 cd PYTHON-PARALLEL-TEXT-HANDLING-PROCESSOR
-```
-
-### 3 Install Required Libraries
-
-```
+3 Install Dependencies
 pip install -r requirements.txt
-```
+Run the Application
+python -m streamlit run app.py
 
----
+Open browser:
 
-# Run the Application
-
-Start the Streamlit application:
-
-```
-streamlit run app.py
-```
-
-Then open your browser and go to:
-
-```
 http://localhost:8501
-```
+Application Workflow
+User uploads a TXT / CSV / Excel file
+System validates input (empty / invalid data)
+Text is split into sentences
+Sentences are processed in parallel
+Sentiment is calculated using rule-based logic
+Results are stored in database
+Dashboard displays metrics, charts, and results
+User can search, export, or email reports
+Sentiment Scoring Logic
 
----
+✔ Handles repeated words
+Example:
 
-# How the System Works
+good good bad → Positive = 2, Negative = 1
 
-1. User uploads a text file.
-2. The system reads the file content.
-3. The text is split into sentences.
-4. Sentences are distributed across multiple processes.
-5. Each process performs sentiment analysis.
-6. Results are stored in SQLite database.
-7. The dashboard displays the analysis results.
+✔ Handles variations:
 
----
+not good → Negative
+very good → Strong Positive
 
-# Example Output
+✔ Output includes:
 
-| Sentence            | Sentiment |
-| ------------------- | --------- |
-| I love this project | Positive  |
-| This is very bad    | Negative  |
-| It works fine       | Neutral   |
+Positive Count
+Negative Count
+Final Score
+Final Sentiment
+Dashboard Features
+Total records processed
+Positive / Negative / Neutral counts
+Pie chart visualization
+Execution time display
+CPU cores used
+Search Functionality
 
----
+Supports:
 
-# Advantages of Parallel Processing
+✔ Keyword search
+✔ Case-insensitive matching
+✔ Partial match search
+✔ Repeated word search
 
-* Faster execution for large datasets
-* Efficient CPU utilization
-* Scalable processing architecture
-* Reduced processing time
+Example:
 
-Parallel processing allows tasks to run simultaneously instead of sequentially, significantly improving performance when working with large text data.
+good good good
 
----
+Shows:
 
-# Future Improvements
+Repeated word = good
+Query repetition count = 3
+Occurrences in each sentence
+Performance Analysis
 
-* Real-time text processing
-* Multi-language sentiment analysis
-* Data visualization charts
-* Cloud deployment
-* REST API integration
+The system compares:
 
----
+Sequential execution time
+Parallel execution time
 
-# Author
+✔ Shows performance improvement
+✔ Demonstrates when parallel processing is beneficial
+
+Edge Case Handling
+
+The system handles:
+
+✔ Empty input
+✔ Invalid files
+✔ Large datasets (50K+ records)
+✔ Repeated words
+✔ No valid text after preprocessing
+✔ Search with no results
+
+Export & Reporting
+
+✔ Download results as CSV
+✔ Send report via email
+✔ Includes summary statistics
+
+Advantages of Parallel Processing
+Faster execution for large datasets
+Efficient CPU utilization
+Scalable architecture
+Reduced processing time
+Future Improvements
+Machine learning-based sentiment analysis
+Multi-language support
+Real-time processing
+Cloud deployment
+API integration
+Author
 
 Jeeva
 
 GitHub:
 https://github.com/JEEVA424
 
----
+License
 
-# License
-
-This project is open-source and available for **educational and research purposes**.
+This project is open-source and available for educational and research purposes.
