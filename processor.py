@@ -1,50 +1,130 @@
+import re
 import time
 from concurrent.futures import ProcessPoolExecutor
-from database import insert_result
-import re
 
 
-positive_words = ["good", "great", "excellent", "amazing", "love", "happy"]
-negative_words = ["bad", "poor", "terrible", "hate", "sad"]
+POSITIVE_WORDS = {
+    "good", "great", "excellent", "happy", "love", "nice", "best",
+    "awesome", "amazing", "wonderful", "fast", "positive", "super",
+    "clean", "smooth", "easy", "strong"
+}
+
+NEGATIVE_WORDS = {
+    "bad", "worst", "sad", "hate", "terrible", "poor", "awful",
+    "slow", "negative", "disappointing", "hard", "difficult", "weak",
+    "error", "issue", "problem"
+}
 
 
-def analyze_sentiment(sentence):
+def split_sentences(text: str) -> list[str]:
+    if not text:
+        return []
 
-    score = 0
-    words = sentence.lower().split()
-
-    for word in words:
-
-        if word in positive_words:
-            score += 1
-
-        if word in negative_words:
-            score -= 1
-
-    return score
+    sentences = re.split(r"[.!?]\s+|\n+", text)
+    return [s.strip() for s in sentences if s and s.strip()]
 
 
-def process_sentence(sentence):
+def sentiment_details(sentence: str) -> tuple[str, int, int, int, str]:
+    words = re.findall(r"\w+", sentence.lower())
 
-    score = analyze_sentiment(sentence)
+    pos_count = 0
+    neg_count = 0
 
-    insert_result(sentence, score)
+    i = 0
+    while i < len(words):
+        word = words[i]
 
-    return sentence, score
+        # "not good" -> negative
+        if word == "not" and i + 1 < len(words):
+            nxt = words[i + 1]
+            if nxt in POSITIVE_WORDS:
+                neg_count += 1
+                i += 2
+                continue
+            if nxt in NEGATIVE_WORDS:
+                pos_count += 1
+                i += 2
+                continue
+
+        # "very good" -> strong positive
+        if word == "very" and i + 1 < len(words):
+            nxt = words[i + 1]
+            if nxt in POSITIVE_WORDS:
+                pos_count += 2
+                i += 2
+                continue
+            if nxt in NEGATIVE_WORDS:
+                neg_count += 2
+                i += 2
+                continue
+
+        # repeated words count normally
+        if word in POSITIVE_WORDS:
+            pos_count += 1
+        elif word in NEGATIVE_WORDS:
+            neg_count += 1
+
+        i += 1
+
+    final_score = pos_count - neg_count
+
+    if final_score > 0:
+        final_sentiment = "Positive"
+    elif final_score < 0:
+        final_sentiment = "Negative"
+    else:
+        final_sentiment = "Neutral"
+
+    return sentence, pos_count, neg_count, final_score, final_sentiment
 
 
-def process_text(text):
+def _parallel_worker(sentence: str):
+    return sentiment_details(sentence)
 
-    start_time = time.time()
 
-    sentences = [s.strip() for s in re.split(r'[.!?]', text) if s.strip()]
+def process_sequential(sentences: list[str]):
+    start = time.time()
+    results = [sentiment_details(s) for s in sentences if s.strip()]
+    end = time.time()
+    return results, end - start
 
-    with ProcessPoolExecutor(max_workers=4) as executor:
 
-        results = list(executor.map(process_sentence, sentences))
+def process_parallel(sentences: list[str], workers: int = 4):
+    clean_sentences = [s for s in sentences if s.strip()]
 
-    end_time = time.time()
+    start = time.time()
+    with ProcessPoolExecutor(max_workers=workers) as executor:
+        results = list(executor.map(_parallel_worker, clean_sentences))
+    end = time.time()
 
-    execution_time = end_time - start_time
+    return results, end - start
 
-    return results, execution_time
+
+def repeated_query_analysis(query: str):
+    words = re.findall(r"\w+", query.lower())
+
+    if not words:
+        return {
+            "is_repeated": False,
+            "repeated_word": "",
+            "repeat_count": 0
+        }
+
+    first_word = words[0]
+    if all(word == first_word for word in words):
+        return {
+            "is_repeated": True,
+            "repeated_word": first_word,
+            "repeat_count": len(words)
+        }
+
+    return {
+        "is_repeated": False,
+        "repeated_word": "",
+        "repeat_count": 0
+    }
+
+
+def count_word_occurrences(text: str, word: str) -> int:
+    words = re.findall(r"\w+", str(text).lower())
+    return words.count(word.lower())
