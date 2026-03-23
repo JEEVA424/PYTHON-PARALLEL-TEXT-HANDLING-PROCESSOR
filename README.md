@@ -1,3 +1,15 @@
+![Python](https://img.shields.io/badge/Python-3.10-blue)
+![Streamlit](https://img.shields.io/badge/Framework-Streamlit-red)
+![Database](https://img.shields.io/badge/Database-SQLite-green)
+![Parallel Processing](https://img.shields.io/badge/Processing-Parallel-orange)
+![License](https://img.shields.io/badge/License-MIT-yellow)
+![Status](https://img.shields.io/badge/Status-Completed-brightgreen)
+![Project Level](https://img.shields.io/badge/Level-Advanced-blueviolet)
+
+![Repo Size](https://img.shields.io/github/repo-size/JEEVA424/PYTHON-PARALLEL-TEXT-HANDLING-PROCESSOR)
+![Stars](https://img.shields.io/github/stars/JEEVA424/PYTHON-PARALLEL-TEXT-HANDLING-PROCESSOR?style=social)
+![Forks](https://img.shields.io/github/forks/JEEVA424/PYTHON-PARALLEL-TEXT-HANDLING-PROCESSOR?style=social)
+
 PYTHON PARALLEL TEXT HANDLING PROCESSOR
 
 🚀 A high-performance Python system designed to process large text datasets efficiently using parallel computing.
