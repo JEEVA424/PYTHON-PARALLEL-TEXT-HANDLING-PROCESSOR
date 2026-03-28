@@ -12,10 +12,8 @@ from processor import (
     split_sentences,
     process_parallel,
     process_sequential,
-    repeated_query_analysis,
-    count_word_occurrences
+    analyze_search_text
 )
-
 create_table()
 
 st.set_page_config(
@@ -276,55 +274,66 @@ with tab3:
     if df is None or df.empty:
         st.info("No processed data available yet. Upload and process a file first.")
     else:
-        search_query = st.text_input("Search by keyword or repeated word pattern")
+        search_query = st.text_input("Search by sentence / keyword / repeated words")
 
         if search_query:
-            query_info = repeated_query_analysis(search_query)
+            analysis = analyze_search_text(search_query)
 
-            if query_info["is_repeated"]:
-                repeated_word = query_info["repeated_word"]
-                repeat_count = query_info["repeat_count"]
+            st.write("### Search Word Analysis")
 
-                st.info(
-                    f"Repeated-word search detected: '{repeated_word}' repeated {repeat_count} times."
-                )
+            col1, col2 = st.columns(2)
 
-                search_df = df.copy()
-                search_df["Word Occurrences in Text"] = search_df["Text"].apply(
-                    lambda x: count_word_occurrences(x, repeated_word)
-                )
-
-                filtered = search_df[
-                    search_df["Word Occurrences in Text"] >= repeat_count
-                ].copy()
-
-                filtered["Repeated Word"] = repeated_word
-                filtered["Query Repeat Count"] = repeat_count
-
-                if filtered.empty:
-                    st.warning(
-                        "No result matched the repeated-word frequency. Try a smaller repetition count or another word."
-                    )
+            with col1:
+                st.write("**All Positive Words Found**")
+                if analysis["all_positive_words"]:
+                    st.write(", ".join(analysis["all_positive_words"]))
                 else:
-                    st.dataframe(
-                        filtered[
-                            [
-                                "Text",
-                                "Positive Count",
-                                "Negative Count",
-                                "Final Score",
-                                "Final Sentiment",
-                                "Repeated Word",
-                                "Query Repeat Count",
-                                "Word Occurrences in Text"
-                            ]
-                        ],
-                        use_container_width=True
-                    )
+                    st.write("None")
 
+                st.write("**Repeated Positive Words**")
+                if analysis["repeated_positive_words"]:
+                    st.write(analysis["repeated_positive_words"])
+                else:
+                    st.write("None")
+
+            with col2:
+                st.write("**All Negative Words Found**")
+                if analysis["all_negative_words"]:
+                    st.write(", ".join(analysis["all_negative_words"]))
+                else:
+                    st.write("None")
+
+                st.write("**Repeated Negative Words**")
+                if analysis["repeated_negative_words"]:
+                    st.write(analysis["repeated_negative_words"])
+                else:
+                    st.write("None")
+
+            st.write("### Search Sentiment Result")
+            a, b, c, d = st.columns(4)
+            a.metric("Positive Count", analysis["positive_count"])
+            b.metric("Negative Count", analysis["negative_count"])
+            c.metric("Final Score", analysis["final_score"])
+            d.metric("Sentiment", analysis["final_sentiment"])
+
+            search_words = (
+                analysis["unique_positive_words"] +
+                analysis["unique_negative_words"]
+            )
+
+            if search_words:
+                pattern = "|".join(search_words)
+                filtered = df[df["Text"].str.contains(pattern, case=False, na=False)]
+
+                st.write("### Matching Records")
+                if filtered.empty:
+                    st.warning("No matching processed records found for the detected sentiment words.")
+                else:
+                    st.dataframe(filtered, use_container_width=True)
             else:
                 filtered = df[df["Text"].str.contains(search_query, case=False, na=False)]
 
+                st.write("### Matching Records")
                 if filtered.empty:
                     st.warning("No results found for this search.")
                 else:
@@ -338,7 +347,6 @@ with tab3:
             file_name="processed_results.csv",
             mime="text/csv"
         )
-
 # ---------------- Tab 4 ----------------
 with tab4:
     st.subheader("Email Report")
