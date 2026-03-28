@@ -1,18 +1,27 @@
 import re
 import time
+from collections import Counter
 from concurrent.futures import ProcessPoolExecutor
 
 
 POSITIVE_WORDS = {
     "good", "great", "excellent", "happy", "love", "nice", "best",
     "awesome", "amazing", "wonderful", "fast", "positive", "super",
-    "clean", "smooth", "easy", "strong"
+    "clean", "smooth", "easy", "strong", "useful", "efficient",
+    "reliable", "stable", "smart", "accurate", "friendly", "beautiful",
+    "cool", "fantastic", "brilliant", "outstanding", "perfect",
+    "powerful", "impressive", "successful", "helpful", "safe",
+    "quick", "responsive", "clear", "creative", "valuable", "effective"
 }
 
 NEGATIVE_WORDS = {
     "bad", "worst", "sad", "hate", "terrible", "poor", "awful",
     "slow", "negative", "disappointing", "hard", "difficult", "weak",
-    "error", "issue", "problem"
+    "error", "issue", "problem", "bug", "broken", "confusing",
+    "ugly", "unfriendly", "unsafe", "late", "boring", "messy",
+    "annoying", "wrong", "failed", "failure", "crash", "crashed",
+    "unstable", "inaccurate", "useless", "risky", "frustrating",
+    "dirty", "laggy", "complicated", "harmful", "loss"
 }
 
 
@@ -24,8 +33,12 @@ def split_sentences(text: str) -> list[str]:
     return [s.strip() for s in sentences if s and s.strip()]
 
 
+def tokenize(text: str) -> list[str]:
+    return re.findall(r"\w+", text.lower())
+
+
 def sentiment_details(sentence: str) -> tuple[str, int, int, int, str]:
-    words = re.findall(r"\w+", sentence.lower())
+    words = tokenize(sentence)
 
     pos_count = 0
     neg_count = 0
@@ -34,7 +47,6 @@ def sentiment_details(sentence: str) -> tuple[str, int, int, int, str]:
     while i < len(words):
         word = words[i]
 
-        # "not good" -> negative
         if word == "not" and i + 1 < len(words):
             nxt = words[i + 1]
             if nxt in POSITIVE_WORDS:
@@ -46,7 +58,6 @@ def sentiment_details(sentence: str) -> tuple[str, int, int, int, str]:
                 i += 2
                 continue
 
-        # "very good" -> strong positive
         if word == "very" and i + 1 < len(words):
             nxt = words[i + 1]
             if nxt in POSITIVE_WORDS:
@@ -58,7 +69,6 @@ def sentiment_details(sentence: str) -> tuple[str, int, int, int, str]:
                 i += 2
                 continue
 
-        # repeated words count normally
         if word in POSITIVE_WORDS:
             pos_count += 1
         elif word in NEGATIVE_WORDS:
@@ -100,31 +110,43 @@ def process_parallel(sentences: list[str], workers: int = 4):
     return results, end - start
 
 
-def repeated_query_analysis(query: str):
-    words = re.findall(r"\w+", query.lower())
+def analyze_search_text(query: str):
+    words = tokenize(query)
+    counter = Counter(words)
 
-    if not words:
-        return {
-            "is_repeated": False,
-            "repeated_word": "",
-            "repeat_count": 0
-        }
+    positive_found = [w for w in words if w in POSITIVE_WORDS]
+    negative_found = [w for w in words if w in NEGATIVE_WORDS]
 
-    first_word = words[0]
-    if all(word == first_word for word in words):
-        return {
-            "is_repeated": True,
-            "repeated_word": first_word,
-            "repeat_count": len(words)
-        }
-
-    return {
-        "is_repeated": False,
-        "repeated_word": "",
-        "repeat_count": 0
+    repeated_positive = {
+        word: count for word, count in counter.items()
+        if word in POSITIVE_WORDS and count > 1
     }
 
+    repeated_negative = {
+        word: count for word, count in counter.items()
+        if word in NEGATIVE_WORDS and count > 1
+    }
 
-def count_word_occurrences(text: str, word: str) -> int:
-    words = re.findall(r"\w+", str(text).lower())
-    return words.count(word.lower())
+    positive_count = len(positive_found)
+    negative_count = len(negative_found)
+    final_score = positive_count - negative_count
+
+    if final_score > 0:
+        final_sentiment = "Positive"
+    elif final_score < 0:
+        final_sentiment = "Negative"
+    else:
+        final_sentiment = "Neutral"
+
+    return {
+        "all_positive_words": positive_found,
+        "all_negative_words": negative_found,
+        "unique_positive_words": sorted(set(positive_found)),
+        "unique_negative_words": sorted(set(negative_found)),
+        "repeated_positive_words": repeated_positive,
+        "repeated_negative_words": repeated_negative,
+        "positive_count": positive_count,
+        "negative_count": negative_count,
+        "final_score": final_score,
+        "final_sentiment": final_sentiment
+    }
